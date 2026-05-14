@@ -1,0 +1,5 @@
+{
+  "dashboardPassword": "change-me",
+  "homeAssistantBase": "http://homeassistant.example.local:8123",
+  "homeAssistantToken": "paste-your-long-lived-access-token-here"
+}

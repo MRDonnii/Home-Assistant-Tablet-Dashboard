@@ -1,0 +1,37 @@
+# Local secrets and machine-specific config
+dashboard-auth.json
+*.local.json
+.env
+.env.*
+!*.example
+
+# Certificates and private keys
+keys/
+*.key
+*.pem
+*.crt
+*.p12
+*.pfx
+
+# Logs and runtime files
+log/
+logs/
+*.log
+*.pid
+
+# Backups and temporary files
+backup-*/
+*.backup
+*.bak
+*.before-*
+*.rollback-*
+*.corrupt-*
+*.mojibake-backup
+.DS_Store
+Thumbs.db
+
+# Dependencies/build output, if added later
+node_modules/
+dist/
+build/
+.cache/

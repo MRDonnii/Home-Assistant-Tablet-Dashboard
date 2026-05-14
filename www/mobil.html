@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home Assistant Tablet Dashboard</title>
+  <script>
+    document.documentElement.dataset.layout = "mobile";
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="http://go2rtc.example.local:1984">
+  <link rel="preconnect" href="http://homeassistant.example.local:8123">
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg?v=20260510-mobile-01">
+  <link rel="shortcut icon" href="./favicon.svg?v=20260510-mobile-01">
+  <link rel="stylesheet" href="./styles.css?v=20260511-light-text-contrast-01">
+</head>
+<body>
+  <div class="ambient ambient-left"></div>
+  <div class="ambient ambient-right"></div>
+
+  <div class="app-shell">
+    <main class="dashboard-layout">
+      <section class="camera-panel panel">
+        <div class="camera-panel-layout">
+          <article class="scene-metric scene-clock-card camera-clock-card">
+            <div class="scene-metric-head">
+              <span id="currentDate">Tirsdag</span>
+              <button id="calendarDetailsButton" class="ghost-button scene-inline-button" type="button">Mere info</button>
+            </div>
+            <strong id="currentTime">00:00</strong>
+            <p id="systemStatus" class="scene-status">Add your Home Assistant URL and token to start loading data.</p>
+          </article>
+          <div id="cameraGrid" class="camera-grid"></div>
+        </div>
+      </section>
+
+      <section class="scene-panel panel">
+        <div class="scene-copy">
+          <article id="weatherCard" class="scene-metric weather-card">
+            <span class="scene-metric-label">Vejret</span>
+            <button id="weatherDetailsButton" class="ghost-button scene-inline-button" type="button">Mere info</button>
+            <div class="scene-metric-head">
+              <strong id="weatherStateValue">-</strong>
+            </div>
+            <p id="weatherMeta" class="scene-metric-meta">Venter på Home Assistant</p>
+            <div id="weatherForecast" class="weather-forecast"></div>
+            <div id="weatherHeroIcon" class="weather-hero-icon" aria-hidden="true">☾</div>
+          </article>
+
+          <article class="scene-metric vehicle-card">
+            <div class="scene-metric-head">
+              <span class="scene-metric-label">Vehicle battery</span>
+              <button id="vehicleDetailsButton" class="ghost-button scene-inline-button" type="button">Mere info</button>
+            </div>
+            <div class="vehicle-card-layout">
+              <div class="vehicle-card-main">
+                <strong id="vehicleBatteryValue">-</strong>
+                <p id="vehicleBatteryMeta" class="scene-metric-meta">No vehicle data yet</p>
+              </div>
+              <div id="vehicleChargePlan" class="vehicle-charge-plan"></div>
+            </div>
+          </article>
+        </div>
+
+        <div class="scene-price">
+          <article class="scene-metric price-card">
+            <div class="power-strip">
+              <div>
+                <span id="utilityNowLabel" class="scene-metric-label">Husets elforbrug nu</span>
+                <strong id="powerNowValue">-</strong>
+                <p id="powerNowMeta" class="scene-metric-meta">Strømmåler</p>
+              </div>
+              <div class="power-mini">
+                <div class="utility-toggle" role="tablist" aria-label="Vis husets forbrug">
+                  <button id="utilityElectricButton" class="utility-toggle-button active" type="button" data-utility-view="electric">El</button>
+                  <button id="utilityHeatButton" class="utility-toggle-button" type="button" data-utility-view="heat">Varme</button>
+                  <button id="utilityWaterButton" class="utility-toggle-button" type="button" data-utility-view="water">Vand</button>
+                </div>
+                <div id="powerMiniChart" class="power-mini-chart" aria-live="polite"></div>
+                <p id="powerMiniCaption" class="power-mini-caption">Forbrug over dagen</p>
+              </div>
+            </div>
+
+            <div class="price-card-head">
+              <div>
+                <span class="scene-metric-label">Strømpriser</span>
+                <strong id="pricePrimaryValue">-</strong>
+                <p id="pricePrimaryMeta" class="scene-metric-meta">Ingen prisdata endnu</p>
+              </div>
+              <div class="price-toggle" role="tablist" aria-label="Vis strømpriser">
+                <button id="priceTodayButton" class="price-toggle-button active" type="button">I dag</button>
+                <button id="priceTomorrowButton" class="price-toggle-button" type="button">I morgen</button>
+                <button id="priceFutureButton" class="price-toggle-button" type="button">Flere dage</button>
+              </div>
+            </div>
+            <div id="priceChart" class="price-chart" aria-live="polite"></div>
+            <div id="priceDayPager" class="price-day-pager" hidden></div>
+            <p id="priceChartCaption" class="price-chart-caption">Timesnit for valgte strømpriser.</p>
+          </article>
+        </div>
+
+        <div class="scene-visual">
+          <div class="scene-visual-stack">
+            <div class="scene-card primary-scene-card">
+              <div id="featuredCameraWrap" class="featured-camera empty">
+                <div class="featured-empty">
+                  <span>Featured camera</span>
+                  <strong>Add a camera URL in Settings</strong>
+                </div>
+              </div>
+            </div>
+
+            <div class="security-cards-grid">
+            <article id="securityCard" class="scene-metric security-card" tabindex="0">
+              <div class="scene-metric-head">
+                <span class="scene-metric-label">Sikkerhed</span>
+              </div>
+              <div id="securitySummary" class="security-summary">
+                <strong id="securityAlarmState">--</strong>
+                <p id="securityAlarmMeta" class="scene-metric-meta">Ingen sikkerhedsdata endnu</p>
+              </div>
+              <div id="securityLockList" class="security-lock-list"></div>
+            </article>
+            <article id="mailCard" class="scene-metric mail-card" tabindex="0">
+              <div class="scene-metric-head">
+                <span class="scene-metric-label">Post</span>
+                <button id="mailClearButton" class="ghost-button scene-inline-button" type="button">Kvitter</button>
+              </div>
+              <div id="mailSummary" class="mail-summary">
+                <strong id="mailState">--</strong>
+                <div id="mailMeter" class="mail-card-meter"></div>
+                <p id="mailMeta" class="scene-metric-meta">Ingen postdata endnu</p>
+              </div>
+            </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="entity-panel panel">
+        <div class="section-heading">
+          <h2>Overblik</h2>
+          <div class="entity-panel-actions">
+            <button id="heatingSummaryBadge" class="heating-summary-badge idle" type="button" aria-live="polite">
+              <span class="status-card-icon" aria-hidden="true">❄</span>
+              <div class="heating-summary-copy">
+                <strong id="heatingSummaryLabel">AC</strong>
+                <div id="heatingSummaryMeta" class="heating-summary-chips">
+                  <span class="heating-summary-chip idle">0/3 kører</span>
+                </div>
+              </div>
+            </button>
+            <button id="radiatorStatsButton" class="room-info-card radiator-summary-card idle" type="button">
+              <span class="status-card-icon" aria-hidden="true">♨</span>
+              <span class="room-info-card-label">Radiator</span>
+              <strong id="radiatorStatsLabel">0 aktive</strong>
+              <span id="radiatorStatsMeta">Åbn statistik</span>
+            </button>
+            <button id="wasteSummaryButton" class="room-info-card waste-summary-card idle" type="button">
+              <span class="status-card-icon" aria-hidden="true">♻</span>
+              <span class="room-info-card-label">Affald</span>
+              <strong id="wasteSummaryLabel">Ingen data</strong>
+              <span id="wasteSummaryMeta">Åbn info</span>
+            </button>
+            <button id="themeModeButton" class="ghost-button theme-mode-button" type="button"><span class="status-card-icon" aria-hidden="true">☾</span><span>Mørk</span></button>
+            <button id="houseModesButton" class="ghost-button technique-stealth-button" type="button"><span class="status-card-icon" aria-hidden="true">⌂</span><span>Hus tilstande</span></button>
+            <button id="techniqueButton" class="ghost-button technique-stealth-button" type="button"><span class="status-card-icon" aria-hidden="true">⚙</span><span>Teknik</span></button>
+          </div>
+        </div>
+        <div id="entityGrid" class="entity-grid"></div>
+      </section>
+    </main>
+  </div>
+
+  <aside id="settingsPanel" class="settings-panel" aria-hidden="true">
+    <div class="settings-card">
+      <div class="section-heading">
+        <div>
+          <p class="panel-label">Config</p>
+          <h2>Dashboard settings</h2>
+        </div>
+        <button id="closeSettingsButton" class="ghost-button" type="button">Close</button>
+      </div>
+
+      <form id="settingsForm" class="settings-form">
+        <label>
+          <span>Home Assistant base URL</span>
+          <input id="haUrlInput" name="haUrl" type="text" placeholder="http://homeassistant.example.local:8123 or /ha">
+          <small class="field-note">Brug `/ha` hvis nginx allerede proxyer videre til Home Assistant, ellers den fulde URL til din HA-server.</small>
+        </label>
+
+        <label>
+          <span>Access token</span>
+          <input id="tokenInput" name="token" type="password" placeholder="Long lived access token">
+          <small class="field-note">Valgfrit hvis du logger ind med din Home Assistant-bruger. Token kan stadig bruges som fallback.</small>
+        </label>
+
+        <div class="settings-auth-panel">
+          <div>
+            <span class="settings-auth-title">Home Assistant login</span>
+            <p id="authStatusText" class="field-note">Ingen aktiv session endnu.</p>
+          </div>
+          <div class="settings-actions settings-auth-actions">
+            <button id="loginWithHaButton" class="ghost-button" type="button">Log ind med Home Assistant</button>
+            <button id="useTokenButton" class="ghost-button" type="button">Brug token</button>
+            <button id="logoutHaButton" class="ghost-button" type="button">Log ud af HA-login</button>
+          </div>
+        </div>
+
+        <label>
+          <span>Refresh interval in seconds</span>
+          <input id="refreshIntervalInput" name="refreshInterval" type="number" min="5" max="120" step="1">
+        </label>
+
+        <label>
+          <span>Tema</span>
+          <select id="themeInput" name="theme">
+            <option value="ember">Ember</option>
+            <option value="fjord">Fjord</option>
+            <option value="forest">Forest</option>
+            <option value="dune">Dune</option>
+            <option value="aurora">Aurora</option>
+            <option value="slate">Slate</option>
+            <option value="onyx-chrome">Onyx Chrome</option>
+            <option value="ios-glass-dark">iOS Glas</option>
+          </select>
+          <small class="field-note">Skifter farver og baggrunde i hele dashboardet, inklusive popups.</small>
+        </label>
+
+        <label>
+          <span>Visible entities</span>
+          <textarea id="entitiesInput" name="entities" rows="8" placeholder="sensor.outdoor_temperature&#10;climate.living_room&#10;binary_sensor.front_door"></textarea>
+        </label>
+
+        <label>
+          <span>Cameras</span>
+          <textarea id="camerasInput" name="cameras" rows="8" placeholder="Front Door|https://camera-page.example/local-view&#10;Driveway|https://camera-page.example/stream.m3u8"></textarea>
+          <small class="field-note">Tip: brug browservenlige links som go2rtc, Frigate, MJPEG eller snapshot-sider. Rene HA kamera-entiteter kraever ofte en saerskilt visnings-URL.</small>
+        </label>
+
+        <details class="settings-advanced" open>
+          <summary>Dashboard entity mapping</summary>
+          <div class="entity-picker">
+            <label>
+              <span>Entity picker</span>
+              <select id="entityPickerSelect" name="entityPicker">
+                <option value="">Connect to Home Assistant and press Test/Suggest</option>
+              </select>
+            </label>
+            <div class="entity-picker-actions">
+              <button class="ghost-button" type="button" data-picker-target="visible">Add visible</button>
+              <button class="ghost-button" type="button" data-picker-target="weather">Set weather</button>
+              <button class="ghost-button" type="button" data-picker-target="power">Set power</button>
+              <button class="ghost-button" type="button" data-picker-target="price">Set price</button>
+              <button class="ghost-button" type="button" data-picker-target="camera">Add camera</button>
+              <button class="ghost-button" type="button" data-picker-target="waste">Add waste</button>
+              <button class="ghost-button" type="button" data-picker-target="climate">Add climate</button>
+            </div>
+          </div>
+          <div class="settings-advanced-grid">
+            <label>
+              <span>Main cards</span>
+              <textarea id="coreEntitiesInput" name="coreEntities" rows="7" placeholder="weather=weather.home&#10;power=sensor.home_power&#10;price=sensor.energy_price"></textarea>
+            </label>
+
+            <label>
+              <span>Utility cards JSON</span>
+              <textarea id="utilitiesInput" name="utilities" rows="10" placeholder="{ &quot;electric&quot;: { &quot;currentEntityId&quot;: &quot;sensor.home_power&quot; } }"></textarea>
+            </label>
+
+            <label>
+              <span>Waste sensors</span>
+              <textarea id="wasteSensorsInput" name="wasteSensors" rows="5" placeholder="sensor.waste_paper&#10;sensor.waste_plastic"></textarea>
+            </label>
+
+            <label>
+              <span>AC / climate entities</span>
+              <textarea id="acClimateEntitiesInput" name="acClimateEntities" rows="5" placeholder="climate.living_room&#10;climate.kitchen"></textarea>
+            </label>
+
+            <label>
+              <span>Kiosk entity map JSON</span>
+              <textarea id="kioskInput" name="kiosk" rows="8" placeholder="{ &quot;refresh&quot;: &quot;button.kiosk_refresh&quot; }"></textarea>
+            </label>
+
+            <label>
+              <span>Vehicle / battery entity map JSON</span>
+              <textarea id="vehicleInput" name="vehicle" rows="8" placeholder="{ &quot;battery&quot;: &quot;sensor.vehicle_battery&quot; }"></textarea>
+            </label>
+
+            <label>
+              <span>Rooms JSON</span>
+              <textarea id="roomDefinitionsInput" name="roomDefinitions" rows="8" placeholder="[{ &quot;key&quot;: &quot;living_room&quot;, &quot;label&quot;: &quot;Living room&quot;, &quot;aliases&quot;: [&quot;living&quot;] }]"></textarea>
+            </label>
+
+            <label>
+              <span>Room popup config JSON</span>
+              <textarea id="roomPopupConfigsInput" name="roomPopupConfigs" rows="8" placeholder="{ &quot;living_room&quot;: { &quot;lights&quot;: [&quot;light.living_room&quot;] } }"></textarea>
+            </label>
+          </div>
+          <small class="field-note">Brug “Suggest entities” som startpunkt, og finjustér bagefter. JSON-felter kan stå tomme for at bruge template-værdier.</small>
+        </details>
+
+        <div id="settingsFeedback" class="settings-feedback" hidden>
+          <strong id="settingsFeedbackTitle">Connection status</strong>
+          <p id="settingsFeedbackBody">Waiting for input.</p>
+        </div>
+
+        <div class="settings-actions">
+          <button id="testConnectionButton" class="ghost-button" type="button">Test connection</button>
+          <button id="suggestEntitiesButton" class="ghost-button" type="button">Suggest entities</button>
+          <button class="primary-button" type="submit">Save and load</button>
+          <button id="resetButton" class="ghost-button" type="button">Reset demo data</button>
+        </div>
+      </form>
+    </div>
+  </aside>
+
+  <aside id="cameraModal" class="camera-modal" aria-hidden="true">
+    <div class="camera-modal-card">
+      <div class="section-heading">
+        <div>
+          <p class="panel-label">Camera</p>
+          <h2 id="cameraModalTitle">Live view</h2>
+        </div>
+        <button id="closeCameraModalButton" class="ghost-button" type="button">Close</button>
+      </div>
+      <div id="cameraModalViewport" class="camera-modal-viewport"></div>
+    </div>
+  </aside>
+
+  <aside id="weatherModal" class="camera-modal info-modal" aria-hidden="true">
+    <div class="camera-modal-card info-modal-card">
+      <div class="section-heading">
+        <div>
+          <p class="panel-label">Vejr</p>
+          <h2 id="weatherModalTitle">Detaljeret vejrudsigt</h2>
+        </div>
+        <button id="closeWeatherModalButton" class="ghost-button" type="button">Close</button>
+      </div>
+      <div id="weatherModalBody" class="info-modal-body"></div>
+    </div>
+  </aside>
+
+  <aside id="vehicleModal" class="camera-modal info-modal" aria-hidden="true">
+    <div class="camera-modal-card info-modal-card">
+      <div class="section-heading">
+        <div>
+          <p class="panel-label">Vehicle</p>
+          <h2 id="vehicleModalTitle">Vehicle detaljer</h2>
+        </div>
+        <button id="closeVehicleModalButton" class="ghost-button" type="button">Close</button>
+      </div>
+      <div id="vehicleModalBody" class="info-modal-body"></div>
+    </div>
+  </aside>
+
+  <aside id="calendarModal" class="camera-modal info-modal" aria-hidden="true">
+    <div class="camera-modal-card info-modal-card calendar-modal-card">
+      <div class="section-heading">
+        <div>
+          <p class="panel-label">Kalender</p>
+          <h2 id="calendarModalTitle">Kommende aftaler</h2>
+        </div>
+        <button id="closeCalendarModalButton" class="ghost-button" type="button">Close</button>
+      </div>
+      <div id="calendarModalBody" class="info-modal-body"></div>
+    </div>
+  </aside>
+
+  <aside id="securityModal" class="camera-modal info-modal" aria-hidden="true">
+    <div class="camera-modal-card info-modal-card">
+      <div class="section-heading">
+        <div>
+          <p class="panel-label">Sikkerhed</p>
+          <h2 id="securityModalTitle">Sikkerhed</h2>
+        </div>
+        <button id="closeSecurityModalButton" class="ghost-button" type="button">Close</button>
+      </div>
+      <div id="securityModalBody" class="info-modal-body"></div>
+    </div>
+  </aside>
+
+  <aside id="roomModal" class="camera-modal info-modal" aria-hidden="true">
+    <div class="camera-modal-card info-modal-card">
+      <div class="section-heading">
+        <div>
+          <p class="panel-label">Rum</p>
+          <h2 id="roomModalTitle">Rum detaljer</h2>
+        </div>
+        <button id="closeRoomModalButton" class="ghost-button" type="button">Close</button>
+      </div>
+      <div id="roomModalBody" class="info-modal-body"></div>
+    </div>
+  </aside>
+
+  <aside id="techniqueModal" class="camera-modal info-modal" aria-hidden="true">
+    <div class="camera-modal-card info-modal-card">
+      <div class="section-heading">
+        <div>
+          <p class="panel-label">Teknik</p>
+          <h2>Dashboard controls</h2>
+        </div>
+        <button id="closeTechniqueModalButton" class="ghost-button" type="button">Close</button>
+      </div>
+      <div class="info-modal-body technique-modal-body">
+        <div class="technique-actions">
+          <button id="refreshButton" class="ghost-button technique-action-button" type="button">Refresh</button>
+          <button id="settingsButton" class="primary-button technique-action-button" type="button">Settings</button>
+        </div>
+        <section class="technique-section">
+          <div class="technique-section-head">
+            <div>
+              <p class="panel-label">Kiosk</p>
+              <h3>Kiosk</h3>
+            </div>
+            <p class="hint">Knapper, styring og live status fra Home Assistant.</p>
+          </div>
+          <div id="kioskPanel" class="kiosk-panel"></div>
+          <p id="techniqueKioskStatus" class="hint technique-kiosk-status">Kiosk ready.</p>
+        </section>
+        <section class="technique-section">
+          <div class="technique-section-head">
+            <div>
+              <p class="panel-label">Temaer</p>
+              <h3>Farvetema</h3>
+            </div>
+            <p class="hint">Skift farver i dashboard og popups direkte herfra.</p>
+          </div>
+          <div id="techniqueThemeGrid" class="technique-theme-grid"></div>
+        </section>
+        <p class="hint">Brug teknik til manuel refresh og dashboard-opsætning.</p>
+      </div>
+    </div>
+  </aside>
+
+  <aside id="houseModesModal" class="camera-modal info-modal" aria-hidden="true">
+    <div class="camera-modal-card info-modal-card">
+      <div class="section-heading">
+        <div>
+          <p class="panel-label">Hus</p>
+          <h2>Hus tilstande</h2>
+        </div>
+        <button id="closeHouseModesModalButton" class="ghost-button" type="button">Close</button>
+      </div>
+      <div id="houseModesModalBody" class="info-modal-body house-modes-modal-body"></div>
+    </div>
+  </aside>
+
+  <aside id="radiatorStatsModal" class="camera-modal info-modal" aria-hidden="true">
+    <div class="camera-modal-card info-modal-card">
+      <div class="section-heading">
+        <div>
+          <p class="panel-label">Radiator</p>
+          <h2 id="radiatorStatsModalTitle">Radiator statistik</h2>
+        </div>
+        <button id="closeRadiatorStatsModalButton" class="ghost-button" type="button">Close</button>
+      </div>
+      <div id="radiatorStatsModalBody" class="info-modal-body"></div>
+    </div>
+  </aside>
+
+  <aside id="acStatsModal" class="camera-modal info-modal" aria-hidden="true">
+    <div class="camera-modal-card info-modal-card">
+      <div class="section-heading">
+        <div>
+          <p class="panel-label">AC</p>
+          <h2 id="acStatsModalTitle">AC statistik</h2>
+        </div>
+        <button id="closeAcStatsModalButton" class="ghost-button" type="button">Close</button>
+      </div>
+      <div id="acStatsModalBody" class="info-modal-body"></div>
+    </div>
+  </aside>
+
+  <aside id="wasteInfoModal" class="camera-modal info-modal" aria-hidden="true">
+    <div class="camera-modal-card info-modal-card">
+      <div class="section-heading">
+        <div>
+          <p class="panel-label">Affald</p>
+          <h2 id="wasteInfoModalTitle">Affaldstømning</h2>
+        </div>
+        <button id="closeWasteInfoModalButton" class="ghost-button" type="button">Close</button>
+      </div>
+      <div id="wasteInfoModalBody" class="info-modal-body"></div>
+    </div>
+  </aside>
+
+  <template id="roomCardTemplate">
+    <article class="entity-card room-card" tabindex="0">
+      <div class="entity-head room-card-head">
+        <p class="entity-name room-name"></p>
+        <div class="room-status-pills">
+          <span class="room-presence"></span>
+          <span class="room-light-pill"></span>
+        </div>
+      </div>
+      <div class="room-climate">
+        <strong class="room-temperature"></strong>
+        <span class="room-humidity"></span>
+      </div>
+      <span class="entity-meta room-meta"></span>
+    </article>
+  </template>
+
+  <template id="cameraCardTemplate">
+    <article class="camera-card">
+      <div class="camera-frame-wrap">
+        <img class="camera-image" loading="lazy" alt="">
+        <iframe class="camera-frame" loading="lazy" referrerpolicy="no-referrer"></iframe>
+      </div>
+    </article>
+  </template>
+
+  <script src="./app.js?v=20260511-light-text-contrast-01"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Camera Player</title>
+  <style>
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      overflow: hidden;
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+    }
+
+    #poster {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center center;
+      background: #000;
+      display: block;
+      opacity: 1;
+      transition: opacity 180ms ease;
+      pointer-events: none;
+    }
+
+    body.ready #poster {
+      opacity: 0;
+    }
+
+    video {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center center;
+      background: #000;
+      display: block;
+      transform: translate3d(0, 0, 0);
+    }
+
+    body.stretch video {
+      object-fit: fill;
+    }
+
+    body.position-center video {
+      object-position: center center;
+    }
+
+    body.position-front_door video {
+      object-position: center center !important;
+      transform: translate3d(0, -12%, 0) scale(1.04);
+    }
+
+    body.position-left video {
+      object-position: left center;
+    }
+
+    body.position-right video {
+      object-position: right center;
+    }
+  </style>
+</head>
+<body>
+  <img id="poster" alt="">
+  <video id="player" autoplay muted playsinline preload="auto" disablepictureinpicture disableremoteplayback controlslist="nodownload noplaybackrate noremoteplayback nofullscreen"></video>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const src = params.get("src");
+    const useSub = params.get("sub") === "1";
+    const stretch = params.get("stretch") === "1";
+    const position = params.get("position") || "center";
+    const poster = document.getElementById("poster");
+    const player = document.getElementById("player");
+    let resolvedSrc = "";
+    let lastProgressAt = Date.now();
+    let lastCurrentTime = 0;
+    let reconnectTimer = null;
+    let reconnecting = false;
+
+    function markReady() {
+      document.body.classList.add("ready");
+    }
+
+    function buildPosterUrl() {
+      return `http://go2rtc.example.local:1984/api/frame.jpeg?src=${encodeURIComponent(resolvedSrc)}&_ts=${Date.now()}`;
+    }
+
+    function buildStreamUrl() {
+      return `http://go2rtc.example.local:1984/api/stream.mp4?src=${encodeURIComponent(resolvedSrc)}&mp4&_ts=${Date.now()}`;
+    }
+
+    function refreshPoster() {
+      if (!resolvedSrc) {
+        return;
+      }
+      poster.src = buildPosterUrl();
+    }
+
+    function reconnectPlayer() {
+      if (!resolvedSrc || document.hidden || reconnecting) {
+        return;
+      }
+      reconnecting = true;
+      document.body.classList.remove("ready");
+      refreshPoster();
+      player.pause();
+      player.removeAttribute("src");
+      player.load();
+      player.src = buildStreamUrl();
+      player.load();
+      player.play().catch(() => {});
+      lastProgressAt = Date.now();
+      lastCurrentTime = 0;
+      window.setTimeout(() => {
+        reconnecting = false;
+      }, 1200);
+    }
+
+    function startWatchdog() {
+      reconnectTimer = window.setInterval(() => {
+        if (!resolvedSrc || document.hidden) {
+          return;
+        }
+
+        const currentTime = player.currentTime || 0;
+        if (!player.paused && !player.ended && currentTime !== lastCurrentTime) {
+          lastCurrentTime = currentTime;
+          lastProgressAt = Date.now();
+          return;
+        }
+
+        if (Date.now() - lastProgressAt > 4500) {
+          reconnectPlayer();
+        }
+      }, 1500);
+    }
+
+    if (stretch) {
+      document.body.classList.add("stretch");
+    }
+
+    document.body.classList.add(`position-${position}`);
+
+    if (src) {
+      resolvedSrc = useSub && !src.endsWith("_sub") ? `${src}_sub` : src;
+      refreshPoster();
+      player.disableRemotePlayback = true;
+      player.src = buildStreamUrl();
+      player.addEventListener("loadedmetadata", () => {
+        player.play().catch(() => {});
+      }, { once: true });
+      player.addEventListener("playing", () => {
+        lastProgressAt = Date.now();
+        markReady();
+      });
+      player.addEventListener("canplay", markReady);
+      player.addEventListener("timeupdate", () => {
+        lastCurrentTime = player.currentTime || 0;
+        lastProgressAt = Date.now();
+      });
+      player.addEventListener("stalled", reconnectPlayer);
+      player.addEventListener("error", reconnectPlayer);
+      document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) {
+          reconnectPlayer();
+        }
+      });
+      startWatchdog();
+      player.play().catch(() => {});
+    }
+  </script>
+</body>
+</html>

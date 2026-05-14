@@ -1,0 +1,76 @@
+{
+  "homeAssistantBaseUrl": "http://homeassistant.example.local:8123",
+  "go2rtcBaseUrl": "http://go2rtc.example.local:1984",
+  "weatherEntityId": "weather.home",
+  "powerEntityId": "sensor.home_power",
+  "priceEntityId": "sensor.energy_price",
+  "featuredCameraEntityId": "camera.front_door",
+  "dashboard": {
+    "coreEntities": {
+      "featuredCamera": "camera.front_door",
+      "weather": "weather.home",
+      "power": "sensor.home_power",
+      "price": "sensor.energy_price",
+      "priceForecast": "sensor.energy_price_forecast",
+      "priceTomorrowAvailable": "binary_sensor.energy_price_tomorrow_available"
+    },
+    "utilities": {
+      "electric": {
+        "currentEntityId": "sensor.home_power",
+        "todayEntityId": "sensor.daily_energy_usage",
+        "historyEntityId": "sensor.home_power",
+        "historyMode": "average",
+        "unit": "W",
+        "chartUnit": "W"
+      }
+    },
+    "wasteCollectionSensors": [
+      "sensor.waste_paper",
+      "sensor.waste_plastic"
+    ],
+    "acClimateEntityIds": [
+      "climate.living_room"
+    ],
+    "kioskEntities": {
+      "refresh": "button.kiosk_refresh"
+    },
+    "vehicleEntities": {
+      "battery": "sensor.vehicle_battery",
+      "range": "sensor.vehicle_range"
+    },
+    "roomDefinitions": [
+      {
+        "key": "living_room",
+        "label": "Living room",
+        "aliases": [
+          "living room",
+          "lounge"
+        ],
+        "order": 0
+      }
+    ],
+    "roomPopupConfigs": {
+      "living_room": {
+        "lights": [
+          "light.living_room"
+        ]
+      }
+    }
+  },
+  "rooms": [
+    {
+      "key": "living_room",
+      "label": "Living room"
+    },
+    {
+      "key": "kitchen",
+      "label": "Kitchen"
+    }
+  ],
+  "cameras": [
+    {
+      "name": "Front door",
+      "entityId": "camera.front_door"
+    }
+  ]
+}
