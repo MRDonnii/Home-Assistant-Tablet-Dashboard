@@ -2,6 +2,10 @@
 
 A cleaned and reusable tablet dashboard for Home Assistant. The repo includes the dashboard UI, sample nginx config, optional local helper scripts, and example config files without private entities or tokens.
 
+Start here if you want a practical setup walkthrough:
+
+- [GETTING-STARTED.md](./GETTING-STARTED.md)
+
 ## Repo layout
 
 - `www/` - the dashboard frontend that nginx should serve.
