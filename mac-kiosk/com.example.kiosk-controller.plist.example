@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>Label</key>
+    <string>com.example.kiosk-controller</string>
+    <key>ProgramArguments</key>
+    <array>
+      <string>/usr/bin/ruby</string>
+      <string>/Users/exampleuser/.kiosk/kiosk_controller.rb</string>
+    </array>
+    <key>EnvironmentVariables</key>
+    <dict>
+      <key>HOME</key>
+      <string>/Users/exampleuser</string>
+      <key>PATH</key>
+      <string>/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    </dict>
+    <key>KeepAlive</key>
+    <true/>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>StandardOutPath</key>
+    <string>/Users/exampleuser/Library/Logs/kiosk-controller.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/exampleuser/Library/Logs/kiosk-controller.log</string>
+  </dict>
+</plist>

@@ -1,0 +1,23 @@
+{
+  "broker_host": "homeassistant.example.local",
+  "broker_port": 1883,
+  "broker_username": "",
+  "broker_password": "",
+  "base_topic": "kiosk/kiosk_device",
+  "startup_url": "https://example.com",
+  "status_interval_seconds": 30,
+  "window_hygiene_interval_seconds": 15,
+  "chrome_path": "/Applications/Google Chrome.app",
+  "keep_awake": true,
+  "close_browser_on_display_sleep": true,
+  "window_hygiene_enabled": true,
+  "foreground_app": "Google Chrome",
+  "allowed_visible_apps": [
+    "Google Chrome",
+    "loginwindow",
+    "Control Center",
+    "Dock",
+    "SystemUIServer",
+    "NotificationCenter"
+  ]
+}
